@@ -52,7 +52,13 @@ def main():
             print("v1 + v3 (different sizes):", v1.add(v3))
         except Exception as e:
             print(f"Error (expected): {e}")
-    
+
+        m3 = Matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        try:
+            print("m2 + m3 (different sizes):", m2.add(m3), sep="")
+        except Exception as e:
+            print(f"Error (expected): {e}")
+
         # Test invalid inputs
         try:
             Vector("not a list")
