@@ -46,3 +46,19 @@ class Vector(Generic[K]):
         if self.shape() != other.shape():
             raise ValueError("Vectors must have the same shape to compute dot product.")
         return sum(a * b for a, b in zip(self.data, other.data))
+
+    def norm_1(self) -> float:
+        """ Computes the norm 1 of the vector. Also known as the Manhattan norm.
+        That's the sum of the absolute values of the vector's components. """
+        return sum(abs(x) for x in self.data)
+
+    def norm(self) -> float:
+        """ Computes the norm 2 of the vector. Also known as the Euclidean norm.
+        That's the square root of the sum of the squares of the vector's components. """
+        square_sum = sum(x ** 2 for x in self.data)
+        return square_sum ** 0.5
+
+    def norm_inf(self) -> float:
+        """ Computes the norm inf of the vector. Also known as the Chebyshev norm.
+        That's the maximum absolute value among the vector's components. """
+        return max(abs(x) for x in self.data)
