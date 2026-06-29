@@ -71,3 +71,8 @@ class Matrix(Generic[K]):
         if not self.is_square():
             raise ValueError("Trace is only defined for square matrices.")
         return sum(self.data[i].data[i] for i in range(self.shape()[0]))
+
+    def transpose(self) -> 'Matrix[K]':
+        """ Returns the transpose of the matrix. """
+        transposed_data = [[self.data[j].data[i] for j in range(self.shape()[0])] for i in range(self.shape()[1])]
+        return Matrix(transposed_data)
