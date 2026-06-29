@@ -47,3 +47,27 @@ class Matrix(Generic[K]):
     def scl(self, scalar: K) -> 'Matrix[K]':
         """ Multiplies a matrix by a scalar. """
         return Matrix([row.scl(scalar).data for row in self.data])
+
+
+    def mul_vec(self, vector: Vector[K]) -> Vector[K]:
+        """ Multiplies a matrix by a vector. """
+        if self.shape()[1] != vector.shape():
+            raise ValueError("Matrix columns must match vector size for multiplication.")
+        result_data = [row.dot(vector) for row in self.data]
+        return Vector(result_data)
+    
+    def mul_mat(self, other: 'Matrix[K]') -> 'Matrix[K]':
+        """ Multiplies two matrices together. """
+        if self.shape()[1] != other.shape()[0]:
+            raise ValueError("Matrix A's columns must match Matrix B's rows for multiplication.")
+        result_data = []
+        for row in self.data:
+            new_row = [row.dot(Vector(col)) for col in zip(*other.data)]
+            result_data.append(new_row)
+        return Matrix(result_data)
+
+    def trace(self) -> K:
+        """ Returns the trace of the matrix (sum of diagonal elements). """
+        if not self.is_square():
+            raise ValueError("Trace is only defined for square matrices.")
+        return sum(self.data[i].data[i] for i in range(self.shape()[0]))
