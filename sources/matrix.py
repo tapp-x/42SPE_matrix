@@ -76,3 +76,38 @@ class Matrix(Generic[K]):
         """ Returns the transpose of the matrix. """
         transposed_data = [[self.data[j].data[i] for j in range(self.shape()[0])] for i in range(self.shape()[1])]
         return Matrix(transposed_data)
+
+    def row_echelon(self) -> 'Matrix[K]':
+        """ Computes and returns the row echelon form of the Matrix"""
+        curr_line = 0
+        line_len, col_len = self.shape()
+
+        for curr_col in range(col_len):
+            pivot_found = False
+
+            for search_line in range(curr_line, line_len):
+                pivot = self.data[search_line].data[curr_col] 
+                if (pivot != 0):
+                    # SWAP
+                    if (search_line > curr_line):
+                        self.data[curr_line], self.data[search_line] = self.data[search_line], self.data[curr_line]
+
+                    # NORMALIZATION
+                    self.data[search_line] = self.data[search_line].scl(1 / pivot)
+
+                    pivot_found = True
+                    break
+
+            if pivot_found:
+                for target_line in range(line_len):
+                    if (target_line != curr_line):
+                    # SET 0 IN PIVOT COLUMN
+                        self.data[target_line] = self.data[target_line].sub(self.data[curr_line].scl(self.data[target_line].data[curr_col]))
+
+                curr_line += 1
+
+                if curr_line >= line_len:
+                    break
+
+        return self
+
