@@ -111,3 +111,34 @@ class Matrix(Generic[K]):
 
         return self
 
+    def determinant(self) -> K:
+        """ Computes the determinant of the matrix. """
+        if not self.is_square():
+            raise ValueError("Determinant is only defined for square matrices.")
+            
+        n = self.shape()[0]
+        if n > 4:
+            raise ValueError("Determinant calculation is only implemented for matrices up to 4x4.")
+        
+        if n == 2:
+            return ((self.data[0].data[0] * self.data[1].data[1]) - (self.data[0].data[1] * self.data[1].data[0]))
+
+        det = 0
+        for col in range(n):
+            
+            scalar = self.data[0].data[col]
+            
+            sign = (-1) ** col
+
+            sub_matrix = []
+
+            for row in range(1, n):
+                sub_row = []
+                for x in range(n):
+                    if x == col:
+                        continue
+                    sub_row.append(self.data[row].data[x])
+                sub_matrix.append(sub_row)
+            det += sign * scalar * Matrix(sub_matrix).determinant()
+        
+        return det
