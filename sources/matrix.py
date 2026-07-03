@@ -93,7 +93,7 @@ class Matrix(Generic[K]):
                         self.data[curr_line], self.data[search_line] = self.data[search_line], self.data[curr_line]
 
                     # NORMALIZATION
-                    self.data[search_line] = self.data[search_line].scl(1 / pivot)
+                    self.data[curr_line] = self.data[curr_line].scl(1 / pivot)
 
                     pivot_found = True
                     break
