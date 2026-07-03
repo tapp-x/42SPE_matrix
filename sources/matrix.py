@@ -142,3 +142,60 @@ class Matrix(Generic[K]):
             det += sign * scalar * Matrix(sub_matrix).determinant()
         
         return det
+
+    def inverse(self) -> 'Matrix[K]':
+        """ Computes and return the inverse of a Matrix, if not possible, raise an error"""
+        if not self.is_square():
+            raise ValueError("Inverse is only possible for square matrices.")
+
+        det = self.determinant
+        if det == 0:
+            raise ValueError("The Matrix given is singular (det = 0), cannot compute the inverse")
+
+        line_len, col_len = self.shape()
+
+        augmented_matrix = []
+        for col, row in enumerate(self.data):
+
+            initial_matrix = list(row.data)
+
+            identitiy_matrix = [1.0 if j == col else 0.0 for j in range(line_len)]
+            augmented_matrix.append(Vector(initial_matrix + identitiy_matrix))
+
+        curr_line = 0
+        for curr_col in range(col_len):
+            pivot_found = False
+            
+            for search_line in range(curr_line, line_len):
+                pivot = augmented_matrix[search_line].data[curr_col]
+                
+                if pivot != 0: 
+                    # SWAP
+                    if search_line > curr_line:
+                        augmented_matrix[curr_line], augmented_matrix[search_line] = augmented_matrix[search_line], augmented_matrix[curr_line]
+                    
+                    # NORMALISATION
+                    actual_pivot = augmented_matrix[curr_line].data[curr_col]
+                    augmented_matrix[curr_line] = augmented_matrix[curr_line].scl(1 / actual_pivot)
+                    
+                    pivot_found = True
+                    break
+                    
+            if not pivot_found:
+                raise ValueError("Matrix is singular and cannot be inverted (determinant is 0).")
+                
+            # CLEAN
+            for target_line in range(line_len):
+                if target_line != curr_line:
+                    factor = augmented_matrix[target_line].data[curr_col]
+                    augmented_matrix[target_line] = augmented_matrix[target_line].sub(augmented_matrix[curr_line].scl(factor))
+                    
+            curr_line += 1
+            if curr_line >= line_len:
+                break
+                
+        inverse_data = []
+        for row in augmented_matrix:
+            inverse_data.append(row.data[col_len:])
+            
+        return Matrix(inverse_data)
