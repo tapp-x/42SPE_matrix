@@ -199,3 +199,12 @@ class Matrix(Generic[K]):
             inverse_data.append(row.data[col_len:])
             
         return Matrix(inverse_data)
+
+    def rank(self) -> int:
+        """ Computes and returns the rank of the matrix. """
+        row_echelon_matrix = self.row_echelon()
+        rank = 0
+        for row in row_echelon_matrix.data:
+            if any(value != 0 for value in row.data):
+                rank += 1
+        return rank
