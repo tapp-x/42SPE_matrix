@@ -8,17 +8,19 @@ class Matrix(Generic[K]):
     def __init__(self, data: list[list[K]]) -> None:
         if not isinstance(data, (list)):
             raise TypeError("Data must be a list of lists.")
-        if len(data) < 2:
-            raise ValueError("Data must have at least 2 rows.")
+        if len(data) == 0:
+            raise ValueError("Data must have at least 1 row.")
+        if not isinstance(data[0], (list)):
+            raise TypeError("Data must be a list of lists.")
         row_length = len(data[0])
+        if row_length == 0:
+            raise ValueError("Matrix rows must have at least 1 element.")
         for row in data:
             if not isinstance(row, (list)):
                 raise TypeError("Data must be a list of lists.")
             if len(row) != row_length:
                 raise ValueError("All rows must have the same length.")
-        self.data = data
-        for i in range(len(data)):
-            self.data[i] = Vector(data[i])
+        self.data = [Vector(row) for row in data]
 
     def __str__(self) -> str:
         """ Returns a string representation of the matrix. """
