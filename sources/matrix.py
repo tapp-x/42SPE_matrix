@@ -64,7 +64,10 @@ class Matrix(Generic[K]):
             raise ValueError("Matrix A's columns must match Matrix B's rows for multiplication.")
         result_data = []
         for row in self.data:
-            new_row = [row.dot(Vector(col)) for col in zip(*other.data)]
+            new_row = []
+            for col in range(other.shape()[1]):
+                column = [other.data[i].data[col] for i in range(other.shape()[0])]
+                new_row.append(row.dot(Vector(column)))
             result_data.append(new_row)
         return Matrix(result_data)
 
