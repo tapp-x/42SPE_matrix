@@ -135,6 +135,9 @@ class Matrix(Generic[K]):
         if n > 4:
             raise ValueError("Determinant calculation is only implemented for matrices up to 4x4.")
         
+        if n == 1:
+            return self.data[0].data[0]
+
         if n == 2:
             return ((self.data[0].data[0] * self.data[1].data[1]) - (self.data[0].data[1] * self.data[1].data[0]))
 
@@ -163,10 +166,6 @@ class Matrix(Generic[K]):
         if not self.is_square():
             raise ValueError("Inverse is only possible for square matrices.")
 
-        det = self.determinant
-        if det == 0:
-            raise ValueError("The Matrix given is singular (det = 0), cannot compute the inverse")
-
         line_len, col_len = self.shape()
 
         augmented_matrix = []
@@ -184,7 +183,7 @@ class Matrix(Generic[K]):
             for search_line in range(curr_line, line_len):
                 pivot = augmented_matrix[search_line].data[curr_col]
                 
-                if pivot != 0: 
+                if abs(pivot) > EPSILON:
                     # SWAP
                     if search_line > curr_line:
                         augmented_matrix[curr_line], augmented_matrix[search_line] = augmented_matrix[search_line], augmented_matrix[curr_line]
@@ -220,6 +219,6 @@ class Matrix(Generic[K]):
         row_echelon_matrix = self.row_echelon()
         rank = 0
         for row in row_echelon_matrix.data:
-            if any(value != 0 for value in row.data):
+            if any(abs(value) > EPSILON for value in row.data):
                 rank += 1
         return rank
