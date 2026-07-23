@@ -35,7 +35,7 @@ class Vector(Generic[K]):
         """ Multiplies a vector by a scalar. """
         return Vector([scalar * x for x in self.data])
     
-    def ecl(self, other: 'Vector[K]') -> K:
+    def ecl(self, other: 'Vector[K]') -> float:
         """ Computes the Euclidean distance between two vectors. """
         if self.shape() != other.shape():
             raise ValueError("Vectors must have the same shape to compute distance.")
@@ -50,7 +50,7 @@ class Vector(Generic[K]):
     def norm_1(self) -> float:
         """ Computes the norm 1 of the vector. Also known as the Manhattan norm.
         That's the sum of the absolute values of the vector's components. """
-        return sum(abs(x) for x in self.data)
+        return float(sum(abs(x) for x in self.data))
 
     def norm(self) -> float:
         """ Computes the norm 2 of the vector. Also known as the Euclidean norm.
@@ -61,4 +61,4 @@ class Vector(Generic[K]):
     def norm_inf(self) -> float:
         """ Computes the norm inf of the vector. Also known as the Chebyshev norm.
         That's the maximum absolute value among the vector's components. """
-        return max(abs(x) for x in self.data)
+        return float(max(abs(x) for x in self.data))
