@@ -2,6 +2,7 @@ from typing import Generic, TypeVar
 from vector import Vector
 
 K = TypeVar('K', int, float, complex)
+EPSILON = 1e-9
 
 class Matrix(Generic[K]):
 
@@ -84,21 +85,23 @@ class Matrix(Generic[K]):
 
     def row_echelon(self) -> 'Matrix[K]':
         """ Computes and returns the row echelon form of the Matrix"""
+        result = Matrix([row.data[:] for row in self.data])
         curr_line = 0
-        line_len, col_len = self.shape()
+        line_len, col_len = result.shape()
 
         for curr_col in range(col_len):
             pivot_found = False
 
             for search_line in range(curr_line, line_len):
-                pivot = self.data[search_line].data[curr_col] 
-                if (pivot != 0):
+                pivot = result.data[search_line].data[curr_col]
+                if abs(pivot) > EPSILON:
                     # SWAP
                     if (search_line > curr_line):
-                        self.data[curr_line], self.data[search_line] = self.data[search_line], self.data[curr_line]
+                        result.data[curr_line], result.data[search_line] = result.data[search_line], result.data[curr_line]
 
                     # NORMALIZATION
-                    self.data[curr_line] = self.data[curr_line].scl(1 / pivot)
+                    pivot = result.data[curr_line].data[curr_col]
+                    result.data[curr_line] = result.data[curr_line].scl(1 / pivot)
 
                     pivot_found = True
                     break
@@ -107,14 +110,21 @@ class Matrix(Generic[K]):
                 for target_line in range(line_len):
                     if (target_line != curr_line):
                     # SET 0 IN PIVOT COLUMN
-                        self.data[target_line] = self.data[target_line].sub(self.data[curr_line].scl(self.data[target_line].data[curr_col]))
+                        factor = result.data[target_line].data[curr_col]
+                        if abs(factor) > EPSILON:
+                            result.data[target_line] = result.data[target_line].sub(result.data[curr_line].scl(factor))
 
                 curr_line += 1
 
                 if curr_line >= line_len:
                     break
 
-        return self
+        for row in result.data:
+            for i in range(len(row.data)):
+                if abs(row.data[i]) < EPSILON:
+                    row.data[i] = 0.0
+
+        return result
 
     def determinant(self) -> K:
         """ Computes the determinant of the matrix. """
