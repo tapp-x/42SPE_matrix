@@ -13,5 +13,11 @@ def main():
     print("Vector v1:", v1)
     print("Result of m2 * v1:", m2.mul_vec(v1))
 
+    m3 = Matrix([[3, -5], [6, 8]])
+    m4 = Matrix([[2, 1], [4, 2]])
+    print("Matrix m3:\n", m3)
+    print("Matrix m4:\n", m4)
+    print("Result of m3 * m4:\n", m3.mul_mat(m4), sep="")
+
 if __name__ == "__main__":
     main()
