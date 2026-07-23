@@ -8,9 +8,9 @@ class Vector(Generic[K]):
     def __init__(self, data: list[K]) -> None:
         if not isinstance(data, (list)):
             raise TypeError("Data must be a list.")
-        if len(data) < 2:
-            raise ValueError("Data must have at least 2 elements.")
-        self.data = data
+        if len(data) == 0:
+            raise ValueError("Data must have at least 1 element.")
+        self.data = data[:]
 
     def __str__(self) -> str:
         return f"Vector({', '.join(str(x) for x in self.data)})"
