@@ -16,7 +16,7 @@ def cross_product(v1: Vector, v2: Vector) -> Vector:
     return Vector(cross_prod)
 
 
-if __name__ == "__main__":
+def main():
     try:
         v1 = Vector([1, 2, 3])
         v2 = Vector([4, 5, 6])
@@ -48,3 +48,6 @@ if __name__ == "__main__":
         print("Cross product of v1 and v4:", cross_prod)
     except ValueError as e:
         print("Error:", e)
+
+if __name__ == "__main__":
+    main()

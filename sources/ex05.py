@@ -13,7 +13,7 @@ def angle_cos(v1: Vector[K], v2: Vector[K]) -> float:
         raise ValueError("Cannot compute angle with zero vector.")
     return dot_product / (norm_v1 * norm_v2)
 
-if __name__ == "__main__":
+def main():
     try:
         v1 = Vector([1, 2, 3])
         v2 = Vector([4, 5, 6])
@@ -37,3 +37,6 @@ if __name__ == "__main__":
         angle = angle_cos(v1, v4)
     except ValueError as e:
         print("Error:", e)
+
+if __name__ == "__main__":
+    main()

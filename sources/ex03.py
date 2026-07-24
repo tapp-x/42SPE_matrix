@@ -1,6 +1,6 @@
 from vector import Vector
 
-if __name__ == "__main__":
+def main():
     try:
         v1 = Vector([1, 2, 3])
         v2 = Vector([4, 5, 6])
@@ -16,3 +16,6 @@ if __name__ == "__main__":
         print("Dot product:", v1.dot(v3))
     except Exception as e:
         print("Error:", e)
+
+if __name__ == "__main__":
+    main()

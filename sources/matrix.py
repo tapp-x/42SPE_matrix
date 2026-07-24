@@ -90,21 +90,21 @@ class Matrix(Generic[K]):
         line_len, col_len = result.shape()
 
         for curr_col in range(col_len):
-            pivot_found = False
+            pivot_line = curr_line
+            for search_line in range(curr_line + 1, line_len):
+                if abs(result.data[search_line].data[curr_col]) > abs(result.data[pivot_line].data[curr_col]):
+                    pivot_line = search_line
 
-            for search_line in range(curr_line, line_len):
-                pivot = result.data[search_line].data[curr_col]
-                if abs(pivot) > EPSILON:
-                    # SWAP
-                    if (search_line > curr_line):
-                        result.data[curr_line], result.data[search_line] = result.data[search_line], result.data[curr_line]
+            pivot = result.data[pivot_line].data[curr_col]
+            pivot_found = abs(pivot) > EPSILON
 
-                    # NORMALIZATION
-                    pivot = result.data[curr_line].data[curr_col]
-                    result.data[curr_line] = result.data[curr_line].scl(1 / pivot)
+            if pivot_found:
+                if pivot_line > curr_line:
+                    result.data[curr_line], result.data[pivot_line] = result.data[pivot_line], result.data[curr_line]
 
-                    pivot_found = True
-                    break
+                # NORMALIZATION
+                pivot = result.data[curr_line].data[curr_col]
+                result.data[curr_line] = result.data[curr_line].scl(1 / pivot)
 
             if pivot_found:
                 for target_line in range(line_len):
@@ -173,27 +173,26 @@ class Matrix(Generic[K]):
 
             initial_matrix = list(row.data)
 
-            identitiy_matrix = [1.0 if j == col else 0.0 for j in range(line_len)]
-            augmented_matrix.append(Vector(initial_matrix + identitiy_matrix))
+            identity_matrix = [1.0 if j == col else 0.0 for j in range(line_len)]
+            augmented_matrix.append(Vector(initial_matrix + identity_matrix))
 
         curr_line = 0
         for curr_col in range(col_len):
-            pivot_found = False
-            
-            for search_line in range(curr_line, line_len):
-                pivot = augmented_matrix[search_line].data[curr_col]
-                
-                if abs(pivot) > EPSILON:
-                    # SWAP
-                    if search_line > curr_line:
-                        augmented_matrix[curr_line], augmented_matrix[search_line] = augmented_matrix[search_line], augmented_matrix[curr_line]
-                    
-                    # NORMALISATION
-                    actual_pivot = augmented_matrix[curr_line].data[curr_col]
-                    augmented_matrix[curr_line] = augmented_matrix[curr_line].scl(1 / actual_pivot)
-                    
-                    pivot_found = True
-                    break
+            pivot_line = curr_line
+            for search_line in range(curr_line + 1, line_len):
+                if abs(augmented_matrix[search_line].data[curr_col]) > abs(augmented_matrix[pivot_line].data[curr_col]):
+                    pivot_line = search_line
+
+            pivot = augmented_matrix[pivot_line].data[curr_col]
+            pivot_found = abs(pivot) > EPSILON
+
+            if pivot_found:
+                if pivot_line > curr_line:
+                    augmented_matrix[curr_line], augmented_matrix[pivot_line] = augmented_matrix[pivot_line], augmented_matrix[curr_line]
+
+                # NORMALISATION
+                actual_pivot = augmented_matrix[curr_line].data[curr_col]
+                augmented_matrix[curr_line] = augmented_matrix[curr_line].scl(1 / actual_pivot)
                     
             if not pivot_found:
                 raise ValueError("Matrix is singular and cannot be inverted (determinant is 0).")
