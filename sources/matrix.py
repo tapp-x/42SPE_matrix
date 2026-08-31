@@ -2,7 +2,7 @@ from typing import Generic, TypeVar
 from vector import Vector
 
 K = TypeVar('K', int, float, complex)
-EPSILON = 1e-9
+MACHINE_EPSILON = 1.2e-7
 
 class Matrix(Generic[K]):
 
@@ -96,7 +96,12 @@ class Matrix(Generic[K]):
                     pivot_line = search_line
 
             pivot = result.data[pivot_line].data[curr_col]
-            pivot_found = abs(pivot) > EPSILON
+            active_scale = 0.0
+            for i in range(curr_line, line_len):
+                for j in range(curr_col, col_len):
+                    active_scale = max(active_scale, abs(result.data[i].data[j]))
+            tolerance = MACHINE_EPSILON * max(line_len, col_len) * active_scale
+            pivot_found = active_scale != 0.0 and abs(pivot) > tolerance
 
             if pivot_found:
                 if pivot_line > curr_line:
@@ -109,9 +114,9 @@ class Matrix(Generic[K]):
             if pivot_found:
                 for target_line in range(line_len):
                     if (target_line != curr_line):
-                    # SET 0 IN PIVOT COLUMN
+                        # SET 0 IN PIVOT COLUMN
                         factor = result.data[target_line].data[curr_col]
-                        if abs(factor) > EPSILON:
+                        if factor != 0:
                             result.data[target_line] = result.data[target_line].sub(result.data[curr_line].scl(factor))
 
                 curr_line += 1
@@ -119,9 +124,10 @@ class Matrix(Generic[K]):
                 if curr_line >= line_len:
                     break
 
+        clean_tolerance = MACHINE_EPSILON * max(line_len, col_len)
         for row in result.data:
             for i in range(len(row.data)):
-                if abs(row.data[i]) < EPSILON:
+                if abs(row.data[i]) <= clean_tolerance:
                     row.data[i] = 0.0
 
         return result
@@ -184,7 +190,12 @@ class Matrix(Generic[K]):
                     pivot_line = search_line
 
             pivot = augmented_matrix[pivot_line].data[curr_col]
-            pivot_found = abs(pivot) > EPSILON
+            active_scale = 0.0
+            for i in range(curr_line, line_len):
+                for j in range(curr_col, col_len):
+                    active_scale = max(active_scale, abs(augmented_matrix[i].data[j]))
+            tolerance = MACHINE_EPSILON * max(line_len, col_len) * active_scale
+            pivot_found = active_scale != 0.0 and abs(pivot) > tolerance
 
             if pivot_found:
                 if pivot_line > curr_line:
@@ -218,6 +229,6 @@ class Matrix(Generic[K]):
         row_echelon_matrix = self.row_echelon()
         rank = 0
         for row in row_echelon_matrix.data:
-            if any(abs(value) > EPSILON for value in row.data):
+            if any(value != 0 for value in row.data):
                 rank += 1
         return rank
