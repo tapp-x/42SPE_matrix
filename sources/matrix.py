@@ -140,32 +140,35 @@ class Matrix(Generic[K]):
         n = self.shape()[0]
         if n > 4:
             raise ValueError("Determinant calculation is only implemented for matrices up to 4x4.")
-        
-        if n == 1:
-            return self.data[0].data[0]
 
-        if n == 2:
-            return ((self.data[0].data[0] * self.data[1].data[1]) - (self.data[0].data[1] * self.data[1].data[0]))
+        result = Matrix([row.data[:] for row in self.data])
+        det = 1
+        sign = 1
 
-        det = 0
-        for col in range(n):
-            
-            scalar = self.data[0].data[col]
-            
-            sign = (-1) ** col
+        for curr_col in range(n):
+            pivot_line = curr_col
+            for search_line in range(curr_col + 1, n):
+                if abs(result.data[search_line].data[curr_col]) > abs(result.data[pivot_line].data[curr_col]):
+                    pivot_line = search_line
 
-            sub_matrix = []
+            pivot = result.data[pivot_line].data[curr_col]
+            if pivot == 0:
+                return 0
 
-            for row in range(1, n):
-                sub_row = []
-                for x in range(n):
-                    if x == col:
-                        continue
-                    sub_row.append(self.data[row].data[x])
-                sub_matrix.append(sub_row)
-            det += sign * scalar * Matrix(sub_matrix).determinant()
-        
-        return det
+            if pivot_line != curr_col:
+                result.data[curr_col], result.data[pivot_line] = result.data[pivot_line], result.data[curr_col]
+                sign *= -1
+
+            pivot = result.data[curr_col].data[curr_col]
+            det *= pivot
+
+            for target_line in range(curr_col + 1, n):
+                factor = result.data[target_line].data[curr_col] / pivot
+                result.data[target_line].data[curr_col] = 0
+                for col in range(curr_col + 1, n):
+                    result.data[target_line].data[col] -= factor * result.data[curr_col].data[col]
+
+        return sign * det
 
     def inverse(self) -> 'Matrix[K]':
         """ Computes and return the inverse of a Matrix, if not possible, raise an error"""
